@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eryn's Chinese Study Tool — P6 华文</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600&family=DM+Sans:wght@400;500;600&family=DM+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#faf8f4;--surface:#fff;--surface2:#f3f0ea;--border:#e2ddd4;--border2:#ccc7bc;--text:#1a1814;--text2:#6b6560;--text3:#a09b94;--accent:#c4390a;--green:#2d7a4f;--green-bg:#edf7f2;--amber:#a06010;--amber-bg:#fdf5e6;--l1:#2563a8;--l2:#7c3aed;--l3:#b45309;--l4:#0e7490;--l5:#15803d;--l6:#be185d;--r:10px;--rl:14px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;line-height:1.6;}
+
+/* HEADER */
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:1.25rem 2rem;display:flex;align-items:center;gap:1rem;position:sticky;top:0;z-index:100;}
+.logo{font-family:'Noto Serif SC',serif;font-size:22px;font-weight:600;color:var(--accent);}
+.logo span{color:var(--text);}
+.hright{margin-left:auto;display:flex;align-items:center;gap:14px;}
+.hmeta{font-size:12px;color:var(--text3);text-align:right;}
+.back-btn{display:none;padding:7px 16px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text2);}
+.back-btn:hover{background:var(--surface2);border-color:var(--border2);}
+.back-btn.show{display:block;}
+
+.container{max-width:860px;margin:0 auto;padding:2rem 1.5rem;}
+
+/* ===== LANDING ===== */
+#page-landing{display:block;}
+#page-study{display:none;}
+
+.greeting{margin-bottom:2rem;}
+.greeting h1{font-family:'Noto Serif SC',serif;font-size:28px;font-weight:600;margin-bottom:6px;}
+.greeting p{color:var(--text2);}
+
+.study-all-btn{display:flex;align-items:center;gap:14px;width:100%;padding:1.1rem 1.5rem;background:var(--accent);border:none;border-radius:var(--rl);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;color:#fff;margin-bottom:1.5rem;}
+.study-all-btn:hover{opacity:0.9;}
+.study-all-icon{font-size:22px;}
+.study-all-right{margin-left:auto;font-size:12px;font-weight:400;opacity:0.85;}
+
+.section-label{font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:0.75rem;}
+
+.lessons-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;}
+
+.lcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;transition:border-color 0.15s;}
+.lcard:hover{border-color:var(--border2);}
+.lcard-top{padding:1.1rem 1.25rem 0.9rem;display:flex;align-items:flex-start;gap:12px;}
+.lnum{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;color:#fff;flex-shrink:0;}
+.l1c{background:var(--l1)}.l2c{background:var(--l2)}.l3c{background:var(--l3)}.l4c{background:var(--l4)}.l5c{background:var(--l5)}.l6c{background:var(--l6)}
+.lcard-info{flex:1;}
+.lcard-title{font-family:'Noto Serif SC',serif;font-size:15px;font-weight:600;color:var(--text);line-height:1.3;}
+.lcard-meta{font-size:12px;color:var(--text3);margin-top:3px;}
+.lcard-actions{display:flex;gap:8px;padding:0 1.25rem 1.1rem;}
+.btn-study{flex:1;padding:9px;border:none;border-radius:var(--r);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:#fff;}
+.btn-study:hover{opacity:0.88;}
+.btn-preview{padding:9px 14px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface2);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text2);white-space:nowrap;}
+.btn-preview:hover{border-color:var(--border2);color:var(--text);}
+
+.lcard-preview{display:none;border-top:1px solid var(--border);padding:1rem 1.25rem;background:var(--bg);}
+.lcard-preview.open{display:block;}
+.preview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px;}
+.pchip{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:7px 10px;}
+.pchip .ch{font-family:'Noto Serif SC',serif;font-size:14px;font-weight:600;color:var(--text);}
+.pchip .py{font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);margin:2px 0;}
+.pchip .en{font-size:10px;color:var(--text3);}
+
+/* ===== STUDY APP ===== */
+.nav-tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:5px;margin-bottom:2rem;flex-wrap:wrap;}
+.nav-tab{flex:1;min-width:90px;padding:9px 12px;border:none;background:transparent;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--text2);white-space:nowrap;}
+.nav-tab:hover{background:var(--surface2);color:var(--text);}
+.nav-tab.active{background:var(--accent);color:#fff;}
+
+.sec{display:none;}
+.sec.active{display:block;}
+
+.lswitcher{display:flex;gap:6px;margin-bottom:1.5rem;flex-wrap:wrap;}
+.lbtn{padding:6px 14px;border:1px solid var(--border);border-radius:100px;background:var(--surface);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text2);}
+.lbtn:hover{border-color:var(--border2);color:var(--text);}
+.lbtn.active{color:#fff;border-color:transparent;}
+.lbtn.all.active{background:var(--text);}
+.lbtn.l1.active{background:var(--l1)}.lbtn.l2.active{background:var(--l2)}.lbtn.l3.active{background:var(--l3)}
+.lbtn.l4.active{background:var(--l4)}.lbtn.l5.active{background:var(--l5)}.lbtn.l6.active{background:var(--l6)}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:1.5rem;margin-bottom:1rem;}
+.prog-wrap{height:3px;background:var(--surface2);border-radius:2px;margin-bottom:1.5rem;overflow:hidden;}
+.prog-fill{height:100%;background:var(--accent);border-radius:2px;transition:width 0.4s;}
+
+/* Flashcard */
+.fc-scene{perspective:900px;margin-bottom:1.25rem;}
+.flashcard{width:100%;min-height:200px;position:relative;transform-style:preserve-3d;transition:transform 0.45s cubic-bezier(0.4,0,0.2,1);cursor:pointer;}
+.flashcard.flipped{transform:rotateY(180deg);}
+.fc-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:var(--rl);border:1px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;min-height:200px;}
+.fc-front{background:var(--surface);}
+.fc-back{background:var(--surface2);transform:rotateY(180deg);}
+.fc-char{font-family:'Noto Serif SC',serif;font-size:52px;font-weight:600;color:var(--text);margin-bottom:0.5rem;letter-spacing:0.05em;text-align:center;}
+.fc-hint{font-size:12px;color:var(--text3);margin-top:0.75rem;}
+.fc-py{font-family:'DM Mono',monospace;font-size:18px;color:var(--accent);margin-bottom:0.75rem;}
+.fc-en{font-size:20px;font-weight:500;color:var(--text);text-align:center;}
+.fc-tag{font-size:11px;color:var(--text3);margin-top:1rem;font-family:'DM Mono',monospace;}
+.fc-nav{display:flex;align-items:center;gap:12px;margin-bottom:1rem;}
+.btn,.fc-nav button{padding:9px 20px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);}
+.btn:hover,.fc-nav button:hover{border-color:var(--border2);background:var(--surface2);}
+.fc-counter{flex:1;text-align:center;font-size:13px;color:var(--text3);font-family:'DM Mono',monospace;}
+.act-row{display:flex;gap:10px;justify-content:center;}
+.btn-know{background:var(--green-bg);border-color:#b2dfc8;color:var(--green);font-weight:500;}
+.btn-know:hover{background:#d6f0e4;}
+.btn-rev{background:var(--amber-bg);border-color:#f0d9b0;color:var(--amber);font-weight:500;}
+.btn-rev:hover{background:#faefd0;}
+
+/* Quiz */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.5rem;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1rem;text-align:center;}
+.stat-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;}
+.stat-val{font-size:28px;font-weight:600;color:var(--text);font-family:'DM Mono',monospace;}
+.quiz-char{font-family:'Noto Serif SC',serif;font-size:52px;font-weight:600;text-align:center;margin:1rem 0 0.5rem;color:var(--text);letter-spacing:0.05em;}
+.quiz-en{font-size:14px;color:var(--text3);text-align:center;margin-bottom:1.5rem;font-style:italic;}
+.quiz-inp{width:100%;padding:12px 16px;font-size:18px;font-family:'DM Mono',monospace;border:1.5px solid var(--border);border-radius:var(--r);background:var(--surface);color:var(--text);text-align:center;outline:none;}
+.quiz-inp:focus{border-color:var(--accent);}
+.quiz-fb{margin:1rem 0 0;padding:10px 14px;border-radius:var(--r);text-align:center;font-size:15px;font-weight:500;display:none;}
+.quiz-fb.ok{background:var(--green-bg);color:var(--green);display:block;border:1px solid #b2dfc8;}
+.quiz-fb.no{background:#fef2f2;color:#b91c1c;display:block;border:1px solid #fecaca;}
+.quiz-btns{display:flex;gap:10px;margin-top:1.25rem;justify-content:center;}
+
+/* Cloze */
+.cloze-top{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:1.25rem;}
+.toggle-grp{display:flex;gap:8px;margin-left:auto;}
+.toggle-btn{padding:6px 14px;border:1px solid var(--border);border-radius:100px;background:var(--surface);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text3);}
+.toggle-btn:hover{border-color:var(--border2);color:var(--text2);}
+.toggle-btn.on{background:var(--surface2);border-color:var(--border2);color:var(--text);font-weight:500;}
+.cloze-lh{font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin:1.5rem 0 0.75rem;}
+.cloze-lh:first-child{margin-top:0;}
+.cloze-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:1.25rem 1.5rem;margin-bottom:0.75rem;}
+.cloze-py{font-family:'DM Mono',monospace;font-size:12px;color:var(--text3);margin-bottom:8px;line-height:1.9;display:none;}
+.cloze-py.show{display:block;}
+.cloze-txt{font-family:'Noto Serif SC',serif;font-size:18px;line-height:2.8;color:var(--text);}
+.cloze-eng{font-size:13px;color:var(--text3);margin-top:10px;font-style:italic;display:none;border-top:1px solid var(--border);padding-top:10px;}
+.cloze-eng.show{display:block;}
+.cinp{font-family:'Noto Serif SC',serif;font-size:18px;border:none;border-bottom:2px solid var(--border2);background:transparent;color:var(--text);outline:none;text-align:center;padding:0 4px;min-width:60px;}
+.cinp:focus{border-color:var(--accent);}
+.cinp.ok{border-color:var(--green);color:var(--green);}
+.cinp.no{border-color:#b91c1c;color:#b91c1c;}
+.cloze-btns{display:flex;gap:10px;margin-top:1.5rem;}
+
+/* Word list */
+.wl-lh{display:flex;align-items:baseline;gap:10px;margin:1.5rem 0 1rem;}
+.wl-lh:first-child{margin-top:0;}
+.wl-lt{font-size:14px;font-weight:600;color:var(--text);}
+.wl-ls{font-size:12px;color:var(--text3);}
+.word-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;margin-bottom:1rem;}
+.wchip{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;}
+.wch{font-family:'Noto Serif SC',serif;font-size:17px;font-weight:600;color:var(--text);}
+.wpy{font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);margin:2px 0;}
+.wen{font-size:11px;color:var(--text3);}
+.wchip.is-known{opacity:0.4;}
+.wchip.is-rev{border-left:3px solid var(--amber);}
+
+/* Progress */
+.plc{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:1.25rem 1.5rem;margin-bottom:0.75rem;}
+.plc-hd{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;}
+.plc-t{font-size:14px;font-weight:600;color:var(--text);}
+.plc-p{font-family:'DM Mono',monospace;font-size:13px;color:var(--text3);}
+.plc-bar{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;margin-bottom:10px;}
+.plc-fill{height:100%;border-radius:3px;transition:width 0.4s;}
+.l1-f{background:var(--l1)}.l2-f{background:var(--l2)}.l3-f{background:var(--l3)}.l4-f{background:var(--l4)}.l5-f{background:var(--l5)}.l6-f{background:var(--l6)}
+.plc-m{display:flex;gap:16px;font-size:12px;color:var(--text3);flex-wrap:wrap;}
+.rev-sec{margin-top:1.5rem;}
+.rev-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:0.75rem;}
+.rev-gl{font-size:11px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--text3);margin:1rem 0 0.5rem;}
+.rev-item{display:flex;align-items:baseline;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);font-size:14px;flex-wrap:wrap;}
+.rev-item:last-child{border-bottom:none;}
+.ri-ch{font-family:'Noto Serif SC',serif;font-size:16px;font-weight:600;min-width:120px;}
+.ri-py{font-family:'DM Mono',monospace;font-size:12px;color:var(--accent);}
+.ri-en{font-size:12px;color:var(--text3);}
+.btn-danger{background:#fef2f2;border-color:#fecaca;color:#b91c1c;}
+.btn-danger:hover{background:#fee2e2;}
+
+@media(max-width:600px){
+  header{padding:1rem;}
+  .container{padding:1rem;}
+  .nav-tab{font-size:12px;padding:8px 8px;min-width:60px;}
+  .fc-char{font-size:36px;}
+  .quiz-char{font-size:38px;}
+  .cloze-txt{font-size:16px;}
+  .cinp{font-size:16px;}
+  .stats-row{gap:6px;}
+  .stat-val{font-size:22px;}
+  .lessons-grid{grid-template-columns:1fr;}
+  .greeting h1{font-size:22px;}
+  .cloze-top{gap:8px;}
+  .toggle-grp{margin-left:0;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">华文 <span>学习</span></div>
+  <div class="hright">
+    <button class="back-btn" id="back-btn" onclick="goHome()">← All lessons</button>
+    <div class="hmeta"><div>Eryn · 圣婴女子小学</div><div>小六 6A</div></div>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- ===== LANDING ===== -->
+<div id="page-landing">
+  <div class="greeting">
+    <h1>你好，Eryn！👋</h1>
+    <p>Choose a lesson to start — preview the word list before you begin, or jump straight in.</p>
+  </div>
+
+  <button class="study-all-btn" onclick="startStudy('all')">
+    <span class="study-all-icon">📚</span>
+    <span>Study all lessons</span>
+    <span class="study-all-right" id="all-count"></span>
+  </button>
+
+  <div class="section-label">Or choose a lesson</div>
+  <div class="lessons-grid" id="lessons-grid"></div>
+</div>
+
+<!-- ===== STUDY APP ===== -->
+<div id="page-study">
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="switchTab('fc')">📇 Flashcards</button>
+    <button class="nav-tab" onclick="switchTab('quiz')">✏️ Pinyin quiz</button>
+    <button class="nav-tab" onclick="switchTab('cloze')">📝 Fill in blanks</button>
+    <button class="nav-tab" onclick="switchTab('wl')">📖 Word list</button>
+    <button class="nav-tab" onclick="switchTab('prog')">📊 Progress</button>
+  </div>
+
+  <!-- FLASHCARDS -->
+  <div id="sec-fc" class="sec active">
+    <div class="lswitcher" id="fc-sw">
+      <button class="lbtn all active" onclick="fcLesson('all',this)">All</button>
+      <button class="lbtn l1" onclick="fcLesson('1',this)">L1</button>
+      <button class="lbtn l2" onclick="fcLesson('2',this)">L2</button>
+      <button class="lbtn l3" onclick="fcLesson('3',this)">L3</button>
+      <button class="lbtn l4" onclick="fcLesson('4',this)">L4</button>
+      <button class="lbtn l5" onclick="fcLesson('5',this)">L5</button>
+      <button class="lbtn l6" onclick="fcLesson('6',this)">L6</button>
+    </div>
+    <div class="prog-wrap"><div class="prog-fill" id="fc-prog" style="width:0%"></div></div>
+    <div class="fc-scene">
+      <div class="flashcard" id="flashcard" onclick="flipCard()">
+        <div class="fc-face fc-front">
+          <div class="fc-char" id="fc-char">—</div>
+          <div class="fc-hint">tap to reveal →</div>
+        </div>
+        <div class="fc-face fc-back">
+          <div class="fc-py" id="fc-py"></div>
+          <div class="fc-en" id="fc-en"></div>
+          <div class="fc-tag" id="fc-tag"></div>
+        </div>
+      </div>
+    </div>
+    <div class="fc-nav">
+      <button onclick="fcNav(-1)">← prev</button>
+      <span class="fc-counter" id="fc-ctr"></span>
+      <button onclick="fcNav(1)">next →</button>
+    </div>
+    <div class="act-row">
+      <button class="btn btn-know" onclick="markKnown()">Know it ✓</button>
+      <button class="btn btn-rev" onclick="markReview()">Review again ↺</button>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="sec-quiz" class="sec">
+    <div class="lswitcher" id="q-sw">
+      <button class="lbtn all active" onclick="qLesson('all',this)">All</button>
+      <button class="lbtn l1" onclick="qLesson('1',this)">L1</button>
+      <button class="lbtn l2" onclick="qLesson('2',this)">L2</button>
+      <button class="lbtn l3" onclick="qLesson('3',this)">L3</button>
+      <button class="lbtn l4" onclick="qLesson('4',this)">L4</button>
+      <button class="lbtn l5" onclick="qLesson('5',this)">L5</button>
+      <button class="lbtn l6" onclick="qLesson('6',this)">L6</button>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-label">score</div><div class="stat-val" id="q-score">0</div></div>
+      <div class="stat-card"><div class="stat-label">streak</div><div class="stat-val" id="q-streak">0</div></div>
+      <div class="stat-card"><div class="stat-label">done</div><div class="stat-val" id="q-done" style="font-size:18px;padding-top:5px">0/0</div></div>
+    </div>
+    <div class="card">
+      <p style="font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em">Type the pinyin for:</p>
+      <div class="quiz-char" id="q-char">—</div>
+      <div class="quiz-en" id="q-en"></div>
+      <input class="quiz-inp" id="q-inp" placeholder="e.g. hǎo or hao3" onkeydown="if(event.key==='Enter')checkQuiz()" autocomplete="off"/>
+      <div class="quiz-fb" id="q-fb"></div>
+      <div class="quiz-btns">
+        <button class="btn" onclick="checkQuiz()">Check</button>
+        <button class="btn" onclick="skipQuiz()">Skip →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CLOZE -->
+  <div id="sec-cloze" class="sec">
+    <div class="cloze-top">
+      <div class="lswitcher" id="cloze-sw" style="margin-bottom:0;flex:1;min-width:200px">
+        <button class="lbtn all active" onclick="clozeLesson('all',this)">All</button>
+        <button class="lbtn l1" onclick="clozeLesson('1',this)">L1</button>
+        <button class="lbtn l2" onclick="clozeLesson('2',this)">L2</button>
+        <button class="lbtn l3" onclick="clozeLesson('3',this)">L3</button>
+        <button class="lbtn l4" onclick="clozeLesson('4',this)">L4</button>
+        <button class="lbtn l5" onclick="clozeLesson('5',this)">L5</button>
+        <button class="lbtn l6" onclick="clozeLesson('6',this)">L6</button>
+      </div>
+      <div class="toggle-grp">
+        <button class="toggle-btn" id="tb-py" onclick="toggleHint('py')">拼音</button>
+        <button class="toggle-btn" id="tb-en" onclick="toggleHint('en')">English</button>
+      </div>
+    </div>
+    <div id="cloze-body"></div>
+    <div class="cloze-btns">
+      <button class="btn" onclick="checkCloze()">Check answers</button>
+      <button class="btn" onclick="resetCloze()">Reset</button>
+    </div>
+  </div>
+
+  <!-- WORD LIST -->
+  <div id="sec-wl" class="sec">
+    <div class="lswitcher" id="wl-sw">
+      <button class="lbtn all active" onclick="wlLesson('all',this)">All</button>
+      <button class="lbtn l1" onclick="wlLesson('1',this)">L1</button>
+      <button class="lbtn l2" onclick="wlLesson('2',this)">L2</button>
+      <button class="lbtn l3" onclick="wlLesson('3',this)">L3</button>
+      <button class="lbtn l4" onclick="wlLesson('4',this)">L4</button>
+      <button class="lbtn l5" onclick="wlLesson('5',this)">L5</button>
+      <button class="lbtn l6" onclick="wlLesson('6',this)">L6</button>
+    </div>
+    <div id="wl-body"></div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div id="sec-prog" class="sec">
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-label">known</div><div class="stat-val" id="p-known">0</div></div>
+      <div class="stat-card"><div class="stat-label">reviewing</div><div class="stat-val" id="p-rev">0</div></div>
+      <div class="stat-card"><div class="stat-label">total</div><div class="stat-val" id="p-total">0</div></div>
+    </div>
+    <div id="p-lessons"></div>
+    <div class="rev-sec">
+      <div class="rev-title">Words to review</div>
+      <div id="rev-list"></div>
+    </div>
+    <div style="margin-top:1.5rem">
+      <button class="btn btn-danger" onclick="resetAll()">Reset all progress</button>
+    </div>
+  </div>
+</div><!-- /page-study -->
+
+</div><!-- /container -->
+
+<script>
+const LT={'1':'第一课 — 加油！加油！','2':'第二课 — 祖孙情','3':'第三课 — 美食小侦探','4':'第四课 — 宝贵的礼物','5':'第五课 — 小故事，大道理','6':'第六课 — 精彩三国'};
+const LSHORT={'1':'加油！加油！','2':'祖孙情','3':'美食小侦探','4':'宝贵的礼物','5':'小故事，大道理','6':'精彩三国'};
+const LC={'1':'l1c','2':'l2c','3':'l3c','4':'l4c','5':'l5c','6':'l6c'};
+const LS=['1','2','3','4','5','6'];
+
+const V={
+'1':[
+  {c:'好榜样',p:'hǎo bǎng yàng',e:'good role model'},
+  {c:'锻炼身体',p:'duàn liàn shēn tǐ',e:'exercise the body'},
+  {c:'景色优美',p:'jǐng sè yōu měi',e:'beautiful scenery'},
+  {c:'实现梦想',p:'shí xiàn mèng xiǎng',e:'realise a dream'},
+  {c:'勤奋学习',p:'qín fèn xué xí',e:'study diligently'},
+  {c:'复习功课',p:'fù xí gōng kè',e:'revise lessons'},
+  {c:'改变计划',p:'gǎi biàn jì huà',e:'change plans'},
+  {c:'一阵狂风',p:'yī zhèn kuáng fēng',e:'a gust of wild wind'},
+  {c:'五颜六色',p:'wǔ yán liù sè',e:'colourful / many colours'},
+  {c:'克服困难',p:'kè fú kùn nán',e:'overcome difficulties'},
+  {c:'勇敢面对压力',p:'yǒng gǎn miàn duì yā lì',e:'bravely face pressure'},
+  {c:'懒惰',p:'lǎn duò',e:'lazy'},
+  {c:'严格',p:'yán gé',e:'strict'},
+  {c:'测验',p:'cè yàn',e:'test / quiz'},
+  {c:'水滴',p:'shuǐ dī',e:'water droplet'},
+],
+'2':[
+  {c:'挡住视线',p:'dǎng zhù shì xiàn',e:'block the line of sight'},
+  {c:'踩到果皮',p:'cǎi dào guǒ pí',e:'step on fruit peel'},
+  {c:'了解详情',p:'liǎo jiě xiáng qíng',e:'understand the details'},
+  {c:'交换礼物',p:'jiāo huàn lǐ wù',e:'exchange gifts'},
+  {c:'活动有趣',p:'huó dòng yǒu qù',e:'activity is interesting'},
+  {c:'字体歪斜',p:'zì tǐ wāi xié',e:'slanted handwriting'},
+  {c:'共同进步',p:'gòng tóng jìn bù',e:'make progress together'},
+  {c:'陪伴家人',p:'péi bàn jiā rén',e:'accompany family'},
+  {c:'笑眯眯地回忆',p:'xiào mī mī de huí yì',e:'recall with a smile'},
+  {c:'贴心的孙子',p:'tiē xīn de sūn zi',e:'considerate grandson'},
+  {c:'促进',p:'cù jìn',e:'promote / foster'},
+  {c:'和谐',p:'hé xié',e:'harmonious'},
+  {c:'拨打',p:'bō dǎ',e:'dial (a call)'},
+  {c:'迅速',p:'xùn sù',e:'quick / rapid'},
+],
+'3':[
+  {c:'例如',p:'lì rú',e:'for example'},
+  {c:'折断筷子',p:'zhé duàn kuài zi',e:'break chopsticks'},
+  {c:'一盘豆苗',p:'yī pán dòu miáo',e:'a plate of pea sprouts'},
+  {c:'争夺财产',p:'zhēng duó cái chǎn',e:'fight over property'},
+  {c:'瘦小的孩子',p:'shòu xiǎo de hái zi',e:'small and thin child'},
+  {c:'小小的米粒',p:'xiǎo xiǎo de mǐ lì',e:'tiny grains of rice'},
+  {c:'新鲜的果汁',p:'xīn xiān de guǒ zhī',e:'fresh fruit juice'},
+  {c:'伟大的发明',p:'wěi dà de fā míng',e:'great invention'},
+  {c:'除了……还……',p:'chú le... hái...',e:'besides... also...'},
+  {c:'烤肉和炸鸡',p:'kǎo ròu hé zhá jī',e:'BBQ meat and fried chicken'},
+  {c:'彼此',p:'bǐ cǐ',e:'each other'},
+  {c:'模仿',p:'mó fǎng',e:'imitate'},
+  {c:'赠送',p:'zèng sòng',e:'give as a gift'},
+  {c:'智慧',p:'zhì huì',e:'wisdom'},
+],
+'4':[
+  {c:'弯下腰',p:'wān xià yāo',e:'bend down / stoop'},
+  {c:'质量差',p:'zhì liàng chà',e:'poor quality'},
+  {c:'修理电脑',p:'xiū lǐ diàn nǎo',e:'repair a computer'},
+  {c:'价钱便宜',p:'jià qián pián yi',e:'cheap price'},
+  {c:'一套餐具',p:'yī tào cān jù',e:'a set of tableware'},
+  {c:'免费送货',p:'miǎn fèi sòng huò',e:'free delivery'},
+  {c:'表示感谢',p:'biǎo shì gǎn xiè',e:'express gratitude'},
+  {c:'随手关灯',p:'suí shǒu guān dēng',e:'turn off lights as you go'},
+  {c:'去一趟公司',p:'qù yī tàng gōng sī',e:'make a trip to the company'},
+  {c:'趁她不注意',p:'chèn tā bù zhù yì',e:'while she is not paying attention'},
+  {c:'不但……反而……',p:'bú dàn... fǎn ér...',e:'not only... but instead...'},
+  {c:'慈祥',p:'cí xiáng',e:'kind / benevolent'},
+  {c:'打扰',p:'dǎ rǎo',e:'disturb / bother'},
+  {c:'损坏',p:'sǔn huài',e:'damage / break'},
+  {c:'销售',p:'xiāo shòu',e:'sales / to sell'},
+],
+'5':[
+  {c:'创意奖',p:'chuàng yì jiǎng',e:'creativity award'},
+  {c:'忍不住',p:'rěn bú zhù',e:'cannot help but'},
+  {c:'笨手笨脚',p:'bèn shǒu bèn jiǎo',e:'clumsy'},
+  {c:'一袋垃圾',p:'yī dài lā jī',e:'a bag of rubbish'},
+  {c:'表达能力',p:'biǎo dá néng lì',e:'ability to express oneself'},
+  {c:'手机铃声',p:'shǒu jī líng shēng',e:'mobile phone ringtone'},
+  {c:'转身逃跑',p:'zhuǎn shēn táo pǎo',e:'turn and run away'},
+  {c:'打碎杯子',p:'dǎ suì bēi zi',e:'smash a cup'},
+  {c:'肥胖的国王',p:'féi pàng de guó wáng',e:'fat king'},
+  {c:'搬到院子里',p:'bān dào yuàn zi lǐ',e:'move into the courtyard'},
+  {c:'靠自己的努力',p:'kào zì jǐ de nǔ lì',e:"rely on one's own effort"},
+  {c:'糟糕',p:'zāo gāo',e:'terrible / what a mess'},
+  {c:'讲述',p:'jiǎng shù',e:'narrate / tell'},
+  {c:'呈现',p:'chéng xiàn',e:'present / display'},
+  {c:'捂住',p:'wǔ zhù',e:'cover up / muffle'},
+],
+'6':[
+  {c:'提出建议',p:'tí chū jiàn yì',e:'put forward a suggestion'},
+  {c:'神机妙算',p:'shén jī miào suàn',e:'brilliant strategy'},
+  {c:'愿意受罚',p:'yuàn yì shòu fá',e:'willing to accept punishment'},
+  {c:'时间足够',p:'shí jiān zú gòu',e:'enough time'},
+  {c:'用布遮盖',p:'yòng bù zhē gài',e:'cover with cloth'},
+  {c:'必须完成',p:'bì xū wán chéng',e:'must complete'},
+  {c:'再三催促',p:'zài sān cuī cù',e:'urge repeatedly'},
+  {c:'英俊帅气',p:'yīng jùn shuài qì',e:'handsome and dashing'},
+  {c:'躲在身后',p:'duǒ zài shēn hòu',e:'hide behind someone'},
+  {c:'杰出的人才',p:'jié chū de rén cái',e:'outstanding talent'},
+  {c:'对抗',p:'duì kàng',e:'resist / oppose'},
+  {c:'拖延',p:'tuō yán',e:'procrastinate / delay'},
+  {c:'妒忌',p:'dù jì',e:'jealous / envious'},
+  {c:'佩服',p:'pèi fú',e:'admire / respect'},
+]};
+
+const CD=[
+  {l:'1',f:'时间就像一张渔网，捕捉了生活中大大小小的事。有些事已经渐渐被我淡忘了，但有一件事却深深地印在我的脑海里，抹也抹不掉……',b:['渔网','捕捉','淡忘','脑海'],py:'Shíjiān jiù xiàng yī zhāng yúwǎng, bǔzhuō le shēnghuó zhōng dàdàxiǎoxiǎo de shì. Yǒuxiē shì yǐjīng jiànjiàn bèi wǒ dànwàng le, dàn yǒu yī jiàn shì què shēnshēn de yìn zài wǒ de nǎohǎi lǐ, mǒ yě mǒ bù diào……',en:'Time is like a fishing net, capturing all the big and small events in life. Some things have gradually faded from memory, but one thing is deeply imprinted in my mind, impossible to erase...'},
+  {l:'2',f:'我鼓起勇气，把事情的来龙去脉一五一十地告诉了老师。',b:['勇气','来龙去脉','一五一十'],py:'Wǒ gǔqǐ yǒngqì, bǎ shìqíng de láilóngqùmài yīwǔyīshí de gàosu le lǎoshī.',en:'I plucked up my courage and told the teacher the whole story from beginning to end, without leaving anything out.'},
+  {l:'2',f:'陈叔叔竖起大拇指，称赞我是一个热心助人的好孩子。听到他的称赞，我心里甜滋滋的，比吃了蜜糖还甜。',b:['大拇指','称赞','热心助人','甜滋滋'],py:'Chén shūshu shù qǐ dà mǔzhǐ, chēngzàn wǒ shì yīgè rèxīn zhùrén de hǎo háizi. Tīng dào tā de chēngzàn, wǒ xīnlǐ tián zīzī de, bǐ chī le mìtáng hái tián.',en:"Uncle Chen gave a thumbs-up and praised me as a kind and helpful child. Hearing his praise, my heart felt sweeter than honey."},
+  {l:'3',f:'老师用严厉的目光看着她，她吓得面如土色，一时不知所措。',b:['严厉','面如土色','所措'],py:'Lǎoshī yòng yánlì de mùguāng kàn zhe tā, tā xià de miàn rú tǔ sè, yīshí bùzhī suǒ cuò.',en:'The teacher stared at her sternly, and she was so frightened that her face turned pale, not knowing what to do.'},
+  {l:'3',f:'我紧张得手心直冒汗，心怦怦直跳，就像十五个吊桶打水——七上八下。',b:['怦怦','吊桶','七上八下'],py:'Wǒ jǐnzhāng de shǒuxīn zhí màohàn, xīn pēngpēng zhí tiào, jiù xiàng shíwǔ gè diàotǒng dǎ shuǐ — qī shàng bā xià.',en:'I was so nervous my palms kept sweating and my heart was pounding — like fifteen buckets drawing water, swinging wildly up and down.'},
+  {l:'4',f:'老婆婆看着从天而降的球，吓得呆若木鸡。说时迟，那时快，球不偏不倚地砸中了老婆婆，老婆婆跌了个四脚朝天，躺在地上不省人事。',b:['呆若木鸡','不偏不倚','四脚朝天','不省人事'],py:'Lǎo pópo kàn zhe cóng tiān ér jiàng de qiú, xià de dāi ruò mùjī. Shuō shí chí, nà shí kuài, qiú bù piān bù yǐ de zá zhòng le lǎo pópo, lǎo pópo diē le gè sì jiǎo cháo tiān, tǎng zài dì shàng bù xǐng rén shì.',en:'The old lady watched the ball fall from the sky, frozen like a statue. Before she knew it, the ball hit her square on — she tumbled flat on her back and lay there completely unconscious.'},
+  {l:'4',f:'我们班输了这场比赛，大家都垂头丧气的，像泄了气的皮球。',b:['垂头丧气','泄了气'],py:'Wǒmen bān shū le zhè chǎng bǐsài, dàjiā dōu chuítóusàngqì de, xiàng xiè le qì de píqiú.',en:'Our class lost the match, and everyone was dejected, like a deflated ball.'},
+  {l:'5',f:'爸爸火冒三丈，气得脸上一阵红一阵白，就像一座快要爆发的火山。',b:['火冒三丈','爆发'],py:'Bàba huǒ mào sān zhàng, qì de liǎn shàng yī zhèn hóng yī zhèn bái, jiù xiàng yī zuò kuài yào bàofā de huǒshān.',en:'Dad was furious, his face flushing red and white by turns, like a volcano about to erupt.'},
+  {l:'5',f:'听了老师的教训后，我觉得脸上热烘烘的，心头像有千百只蚂蚁爬过，难受极了。',b:['热烘烘','蚂蚁','难受'],py:'Tīng le lǎoshī de jiàoxun hòu, wǒ juéde liǎn shàng rè hōnghōng de, xīntóu xiàng yǒu qiānbǎi zhī mǎyǐ pá guò, nánshòu jí le.',en:'After the teacher scolded me, my face felt burning hot and it was as if a thousand ants were crawling over my heart — it was unbearable.'},
+  {l:'6',f:'我从老师手中接过奖杯，愉快的心情非笔墨所能形容。',b:['奖杯','非笔墨所能形容'],py:'Wǒ cóng lǎoshī shǒu zhōng jiē guò jiǎngbēi, yúkuài de xīnqíng fēi bǐmò suǒ néng xíngróng.',en:'I received the trophy from the teacher; my joy was beyond words.'},
+  {l:'6',f:'听到这个坏消息，他不由得倒吸一口气，脸色变得像纸一样白。',b:['不由得','倒吸一口气'],py:'Tīng dào zhège huài xiāoxi, tā bùyóude dào xī yī kǒu qì, liǎnsè biàn de xiàng zhǐ yīyàng bái.',en:'Upon hearing the bad news, he could not help but gasp, his face turning as white as paper.'},
+];
+
+// state
+let known=new Set(),revSet=new Set();
+let showPy=false,showEn=false;
+function load(){try{const k=localStorage.getItem('ek'),r=localStorage.getItem('er');if(k)known=new Set(JSON.parse(k));if(r)revSet=new Set(JSON.parse(r));}catch(e){}}
+function save(){try{localStorage.setItem('ek',JSON.stringify([...known]));localStorage.setItem('er',JSON.stringify([...revSet]));}catch(e){}}
+
+// utils
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function allV(){return LS.flatMap(l=>V[l]);}
+function getV(l){return l==='all'?allV():V[l];}
+function lessonOf(c){for(const l of LS){if(V[l].find(v=>v.c===c))return l;}return '';}
+function setActive(sw,btn){sw.querySelectorAll('.lbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function norm(s){return s.trim().toLowerCase().replace(/[āáǎà]/g,'a').replace(/[ēéěè]/g,'e').replace(/[īíǐì]/g,'i').replace(/[ōóǒò]/g,'o').replace(/[ūúǔù]/g,'u').replace(/[ǖǘǚǜü]/g,'u').replace(/[1-5]/g,'').replace(/\s+/g,'');}
+
+// ===== LANDING =====
+function buildLanding(){
+  document.getElementById('all-count').textContent=allV().length+' words · 6 lessons';
+  const grid=document.getElementById('lessons-grid');
+  grid.innerHTML='';
+  LS.forEach(l=>{
+    const w=V[l].length;
+    const k=V[l].filter(v=>known.has(v.c)).length;
+    const pct=Math.round(k/w*100);
+    const d=document.createElement('div');
+    d.className='lcard';
+    d.id='lcard-'+l;
+    d.innerHTML=`
+      <div class="lcard-top">
+        <div class="lnum ${LC[l]}">${l}</div>
+        <div class="lcard-info">
+          <div class="lcard-title">${LSHORT[l]}</div>
+          <div class="lcard-meta">${w} words · ${pct}% known</div>
+        </div>
+      </div>
+      <div class="lcard-actions">
+        <button class="btn-study ${LC[l]}" onclick="startStudy('${l}')">Study →</button>
+        <button class="btn-preview" id="pbtn-${l}" onclick="togglePreview('${l}')">Preview words</button>
+      </div>
+      <div class="lcard-preview" id="ppanel-${l}">
+        <div class="preview-grid" id="pgrid-${l}"></div>
+      </div>`;
+    grid.appendChild(d);
+  });
+}
+
+function togglePreview(l){
+  const panel=document.getElementById('ppanel-'+l);
+  const btn=document.getElementById('pbtn-'+l);
+  const grid=document.getElementById('pgrid-'+l);
+  const open=panel.classList.contains('open');
+  if(!open){
+    grid.innerHTML=V[l].map(v=>`<div class="pchip"><div class="ch">${v.c}</div><div class="py">${v.p}</div><div class="en">${v.e}</div></div>`).join('');
+  }
+  panel.classList.toggle('open',!open);
+  btn.textContent=open?'Preview words':'Hide words ↑';
+}
+
+function startStudy(l){
+  document.getElementById('page-landing').style.display='none';
+  document.getElementById('page-study').style.display='block';
+  document.getElementById('back-btn').classList.add('show');
+  // pre-select lesson across all switchers
+  ['fc-sw','q-sw','cloze-sw','wl-sw'].forEach(id=>{
+    const sw=document.getElementById(id);
+    if(!sw)return;
+    const btn=l==='all'?sw.querySelector('.lbtn.all'):sw.querySelector('.lbtn.l'+l);
+    if(btn)setActive(sw,btn);
+  });
+  _fcL=l; fcList=shuffle(getV(l)); fcIdx=0; renderFC();
+  _qL=l; qList=shuffle(getV(l)); qIdx=0; qSc=0; qStr=0; qDn=0; renderQStats(); renderQ();
+  _cL=l; buildCloze();
+  _wlL=l; buildWL();
+  updateProgress();
+  switchTab('fc');
+}
+
+function goHome(){
+  document.getElementById('page-landing').style.display='block';
+  document.getElementById('page-study').style.display='none';
+  document.getElementById('back-btn').classList.remove('show');
+  buildLanding();
+}
+
+// ===== TABS =====
+function switchTab(t){
+  const ids=['fc','quiz','cloze','wl','prog'];
+  document.querySelectorAll('.nav-tab').forEach((b,i)=>b.classList.toggle('active',ids[i]===t));
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sec-'+t).classList.add('active');
+}
+
+// ===== FLASHCARDS =====
+let _fcL='all',fcList=[],fcIdx=0;
+function fcLesson(l,btn){_fcL=l;setActive(document.getElementById('fc-sw'),btn);fcList=shuffle(getV(l));fcIdx=0;renderFC();}
+function renderFC(){
+  if(!fcList.length)return;
+  const v=fcList[fcIdx];
+  document.getElementById('fc-char').textContent=v.c;
+  document.getElementById('fc-py').textContent=v.p;
+  document.getElementById('fc-en').textContent=v.e;
+  document.getElementById('fc-tag').textContent=LT[lessonOf(v.c)]||'';
+  document.getElementById('flashcard').classList.remove('flipped');
+  document.getElementById('fc-ctr').textContent=(fcIdx+1)+' / '+fcList.length;
+  document.getElementById('fc-prog').style.width=Math.round(fcIdx/fcList.length*100)+'%';
+}
+function flipCard(){document.getElementById('flashcard').classList.toggle('flipped');}
+function fcNav(d){fcIdx=(fcIdx+d+fcList.length)%fcList.length;renderFC();}
+function markKnown(){known.add(fcList[fcIdx].c);revSet.delete(fcList[fcIdx].c);save();updateProgress();buildWL();fcNav(1);}
+function markReview(){revSet.add(fcList[fcIdx].c);known.delete(fcList[fcIdx].c);save();updateProgress();buildWL();fcNav(1);}
+
+// ===== QUIZ =====
+let _qL='all',qList=[],qIdx=0,qSc=0,qStr=0,qDn=0;
+function qLesson(l,btn){_qL=l;setActive(document.getElementById('q-sw'),btn);qList=shuffle(getV(l));qIdx=0;qSc=0;qStr=0;qDn=0;renderQStats();renderQ();}
+function renderQ(){
+  if(!qList.length)return;
+  const v=qList[qIdx%qList.length];
+  document.getElementById('q-char').textContent=v.c;
+  document.getElementById('q-en').textContent=v.e;
+  document.getElementById('q-inp').value='';
+  document.getElementById('q-fb').className='quiz-fb';
+  document.getElementById('q-inp').focus();
+}
+function checkQuiz(){
+  const v=qList[qIdx%qList.length];
+  const ok=norm(document.getElementById('q-inp').value)===norm(v.p);
+  qDn++;if(ok){qSc++;qStr++;}else{qStr=0;}
+  const fb=document.getElementById('q-fb');
+  fb.className='quiz-fb '+(ok?'ok':'no');
+  fb.textContent=ok?'正确！  '+v.p:'答案是：'+v.p;
+  renderQStats();
+  setTimeout(()=>{qIdx++;renderQ();},1600);
+}
+function skipQuiz(){qIdx++;qDn++;renderQStats();renderQ();}
+function renderQStats(){
+  document.getElementById('q-score').textContent=qSc;
+  document.getElementById('q-streak').textContent=qStr;
+  document.getElementById('q-done').textContent=qDn+'/'+qList.length;
+}
+
+// ===== CLOZE =====
+let _cL='all';
+function clozeLesson(l,btn){_cL=l;setActive(document.getElementById('cloze-sw'),btn);buildCloze();}
+function toggleHint(t){
+  if(t==='py'){showPy=!showPy;document.getElementById('tb-py').classList.toggle('on',showPy);document.querySelectorAll('.cloze-py').forEach(e=>e.classList.toggle('show',showPy));}
+  else{showEn=!showEn;document.getElementById('tb-en').classList.toggle('on',showEn);document.querySelectorAll('.cloze-eng').forEach(e=>e.classList.toggle('show',showEn));}
+}
+function buildCloze(){
+  const data=_cL==='all'?CD:CD.filter(c=>c.l===_cL);
+  const body=document.getElementById('cloze-body');
+  body.innerHTML='';
+  let last='';
+  data.forEach(cd=>{
+    if(cd.l!==last){
+      const h=document.createElement('div');
+      h.className='cloze-lh';h.textContent=LT[cd.l];
+      body.appendChild(h);last=cd.l;
+    }
+    const div=document.createElement('div');
+    div.className='cloze-card';
+    let txt=cd.f;
+    cd.b.forEach(b=>{
+      const w=Math.max(60,b.length*22);
+      txt=txt.replace(b,`<input class="cinp" data-ans="${b}" style="width:${w}px"/>`);
+    });
+    div.innerHTML=`<div class="cloze-py${showPy?' show':''}">${cd.py||''}</div><div class="cloze-txt">${txt}</div><div class="cloze-eng${showEn?' show':''}">${cd.en||''}</div>`;
+    body.appendChild(div);
+  });
+}
+function checkCloze(){document.querySelectorAll('.cinp').forEach(i=>{i.classList.remove('ok','no');if(i.value.trim()===i.dataset.ans)i.classList.add('ok');else{i.classList.add('no');i.placeholder=i.dataset.ans;}});}
+function resetCloze(){document.querySelectorAll('.cinp').forEach(i=>{i.value='';i.classList.remove('ok','no');i.placeholder='';});}
+
+// ===== WORD LIST =====
+let _wlL='all';
+function wlLesson(l,btn){_wlL=l;setActive(document.getElementById('wl-sw'),btn);buildWL();}
+function buildWL(){
+  const body=document.getElementById('wl-body');body.innerHTML='';
+  const ls=_wlL==='all'?LS:[_wlL];
+  ls.forEach(l=>{
+    const h=document.createElement('div');h.className='wl-lh';
+    h.innerHTML=`<span class="wl-lt">${LT[l]}</span><span class="wl-ls">${V[l].length} words</span>`;
+    body.appendChild(h);
+    const g=document.createElement('div');g.className='word-grid';
+    V[l].forEach(v=>{
+      const d=document.createElement('div');
+      d.className='wchip'+(known.has(v.c)?' is-known':revSet.has(v.c)?' is-rev':'');
+      d.innerHTML=`<div class="wch">${v.c}</div><div class="wpy">${v.p}</div><div class="wen">${v.e}</div>`;
+      g.appendChild(d);
+    });
+    body.appendChild(g);
+  });
+}
+
+// ===== PROGRESS =====
+function updateProgress(){
+  document.getElementById('p-known').textContent=known.size;
+  document.getElementById('p-rev').textContent=revSet.size;
+  document.getElementById('p-total').textContent=allV().length;
+  const pl=document.getElementById('p-lessons');pl.innerHTML='';
+  LS.forEach(l=>{
+    const w=V[l];const k=w.filter(v=>known.has(v.c)).length;
+    const r=w.filter(v=>revSet.has(v.c)).length;
+    const pct=Math.round(k/w.length*100);
+    const d=document.createElement('div');d.className='plc';
+    d.innerHTML=`<div class="plc-hd"><span class="plc-t">${LT[l]}</span><span class="plc-p">${pct}%</span></div><div class="plc-bar"><div class="plc-fill l${l}-f" style="width:${pct}%"></div></div><div class="plc-m"><span>Known: ${k}/${w.length}</span><span>Reviewing: ${r}</span><span>Unseen: ${w.length-k-r}</span></div>`;
+    pl.appendChild(d);
+  });
+  const rl=document.getElementById('rev-list');rl.innerHTML='';
+  if(!revSet.size){rl.innerHTML='<p style="font-size:14px;color:var(--text3)">No words marked for review yet.</p>';return;}
+  LS.forEach(l=>{
+    const items=V[l].filter(v=>revSet.has(v.c));if(!items.length)return;
+    const lb=document.createElement('div');lb.className='rev-gl';lb.textContent=LT[l];rl.appendChild(lb);
+    items.forEach(v=>{const r=document.createElement('div');r.className='rev-item';r.innerHTML=`<span class="ri-ch">${v.c}</span><span class="ri-py">${v.p}</span><span class="ri-en">${v.e}</span>`;rl.appendChild(r);});
+  });
+}
+function resetAll(){
+  if(!confirm('Reset all progress? This clears your known and review lists.'))return;
+  known.clear();revSet.clear();save();updateProgress();buildWL();
+}
+
+// init
+load();buildLanding();
+fcList=shuffle(allV());renderFC();
+qList=shuffle(allV());renderQStats();renderQ();
+buildCloze();buildWL();updateProgress();
+</script>
+</body>
+</html>
